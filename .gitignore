@@ -1,0 +1,10 @@
+.vscode/
+
+/models/efficientnet_b0_checkpoint.pt
+/models/resnet50_checkpoint.pt
+/models/densenet121_checkpoint.pt
+
+**/__pycache__/
+
+**/node_modules/"backend/checkpoints/*.pt" 
+"backend/checkpoints/*.pth" 
