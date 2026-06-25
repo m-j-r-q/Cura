@@ -14,7 +14,7 @@ from transforms import train_transform, val_transform
 from model import build_model
 from trainer import train_one_epoch, validate_one_epoch, force_memory_release
 from utils import load_pos_weights
-
+from safetensors.torch import save_file
 
 class AsymmetricLoss(nn.Module):
     def __init__(
@@ -179,11 +179,10 @@ def train_model(
                 print(f"  {disease:25} {per_class_aucs[i]:.4f}")
 
         if mean_auc > best_auc:
-            best_auc         = mean_auc
-            patience_counter = 0
+            best_auc   = mean_auc
             state_dict = model.state_dict()
-            save_path  = f'{output_dir}/checkpoints/{architecture}_best.pt'
-            torch.save(state_dict, save_path)
+            save_path  = f'{output_dir}/checkpoints/{architecture}_best.safetensors'
+            save_file(state_dict, save_path)
             del state_dict
             print(f"\n  → New best AUC: {best_auc:.4f} — saved")
         else:

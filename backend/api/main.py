@@ -13,6 +13,8 @@ import io
 from src.model import build_model
 from api.pipeline import run_pipeline
 
+from safetensors.torch import load_file
+
 app = FastAPI(
     title="Cura API",
     description="Chest X-ray Analysis Pipeline",
@@ -31,14 +33,17 @@ app.add_middleware(
 )
 
 
-ARCHITECTURE   = "densenet121"
-CHECKPOINT     = os.path.join(os.path.dirname(__file__), '..', 'checkpoints', 'densenet121_best.pt')
-device         = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+ARCHITECTURE = "densenet121"
+CHECKPOINT   = os.path.join(
+    os.path.dirname(__file__), '..', 'checkpoints', 'densenet121_best.safetensors'
+)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 print(f"Loading {ARCHITECTURE} on {device}...")
 
 model = build_model(ARCHITECTURE, pretrained=False)
-state_dict = torch.load(CHECKPOINT, map_location=device)
+state_dict = load_file(CHECKPOINT, device=str(device))
 model.load_state_dict(state_dict)
 model = model.to(device)
 model.eval()
