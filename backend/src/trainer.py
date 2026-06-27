@@ -41,7 +41,7 @@ def train_one_epoch(model, loader, criterion, optimizer, device, scaler):
 
         running_loss += loss.item()
 
-        if (i + 1) % 200 == 0 or (i + 1) == total_batches:
+        if (i + 1) % 100 == 0 or (i + 1) == total_batches:
             ram = psutil.virtual_memory()
             print(f"  Batch {i+1}/{total_batches} | "
                   f"loss: {loss.item():.4f} | "
