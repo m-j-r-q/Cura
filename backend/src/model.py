@@ -5,10 +5,6 @@ from dataset import NUM_CLASSES
 
 
 def add_internal_dropout(model, dropout_p=0.2):
-    """
-    Inserts standard element-wise Dropout after every conv2 in each _DenseLayer
-    Safe for low growth-rate architectures like DenseNet.
-    """
     from torchvision.models.densenet import _DenseLayer
 
     for name, module in model.named_modules():
