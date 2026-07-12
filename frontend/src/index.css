@@ -133,5 +133,22 @@ body {
 }
 .reset-btn:hover { background: #d7d7d7; color: black; }
 
-/* ── Error ── */
 .error-text { color: #ef4444; text-align: center; margin-top: 1rem; font-size: 0.9rem; }
+
+.uncertainty-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.certainty-badge {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.uncertainty-detail {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+}

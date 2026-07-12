@@ -1,5 +1,14 @@
 function DiagnosisCard({ diagnosis }) {
-  const { disease, confidence, affected_region, heatmap_base64 } = diagnosis
+  const {
+    disease, confidence, uncertainty,
+    confidence_level, affected_region, heatmap_base64
+  } = diagnosis
+
+  const confidenceColor = {
+    'High':     '#22c55e',
+    'Moderate': '#f59e0b',
+    'Low':      '#ef4444',
+  }
 
   return (
     <div className="diagnosis-card">
@@ -10,7 +19,9 @@ function DiagnosisCard({ diagnosis }) {
 
       <div className="confidence-row">
         <span className="confidence-label">Confidence</span>
-        <span className="confidence-value">{(confidence * 100).toFixed(1)}%</span>
+        <span className="confidence-value">
+          {(confidence * 100).toFixed(1)}%
+        </span>
       </div>
       <div className="confidence-bar-track">
         <div
@@ -19,9 +30,22 @@ function DiagnosisCard({ diagnosis }) {
         />
       </div>
 
+      <div className="uncertainty-row">
+        <span className="confidence-label">Model certainty</span>
+        <span
+          className="certainty-badge"
+          style={{ color: confidenceColor[confidence_level] }}
+        >
+          {confidence_level}
+        </span>
+      </div>
+      <div className="uncertainty-detail">
+        Uncertainty score: {(uncertainty * 100).toFixed(1)}%
+      </div>
+
       {heatmap_base64 && (
         <div className="heatmap-container">
-          <p className="heatmap-label">Grad-CAM Activation Map</p>
+          <p className="heatmap-label">Grad-CAM activation map</p>
           <img
             src={`data:image/png;base64,${heatmap_base64}`}
             alt={`Grad-CAM for ${disease}`}
