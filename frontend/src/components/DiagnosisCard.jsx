@@ -31,7 +31,7 @@ function DiagnosisCard({ diagnosis }) {
       </div>
 
       <div className="uncertainty-row">
-        <span className="confidence-label">Model certainty</span>
+        <span className="confidence-label">Model Certainty</span>
         <span
           className="certainty-badge"
           style={{ color: confidenceColor[confidence_level] }}
