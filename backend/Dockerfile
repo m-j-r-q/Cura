@@ -28,7 +28,6 @@ RUN python -c "import torchxrayvision as xrv; xrv.baseline_models.chestx_det.PSP
 
 COPY src/ ./src/
 COPY api/ ./api/
-COPY checkpoints/ ./checkpoints/
 COPY ensemble_thresholds.json .
 
 CMD ["python", "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860"]
