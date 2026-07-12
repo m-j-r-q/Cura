@@ -12,9 +12,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from src.dataset import DISEASES, NUM_CLASSES
 from src.transforms import val_transform
 from src.quality import assess_quality
-from gradcam import GradCAM
-from gradcam_targets import get_target_layer
-from segmentation import get_affected_region
+from api.gradcam import GradCAM
+from api.gradcam_targets import get_target_layer
+from api.segmentation import get_affected_region
 from src.uncertainty import mc_dropout_ensemble
 
 QUALITY_LABEL_THRESHOLDS = {'Good': 150, 'Acceptable': 80}
