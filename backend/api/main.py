@@ -45,7 +45,7 @@ print(f"Loading ensemble on {device}...")
 ensemble_models = []
 for arch in ENSEMBLE_ARCHITECTURES:
     print(f"  Loading {arch}...")
-    model = build_model(arch, pretrained=False, dropout_p=0.2)
+    model = build_model(arch, pretrained=False, dropout_p=0.2, internal_dropout_p=0.0)
 
     path = hf_hub_download(
         repo_id=REPO_ID,
