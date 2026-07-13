@@ -40,14 +40,14 @@ class GradCAM:
         if cam.max() > 0:
             cam = cam / cam.max()
 
-        # If region to broad increase threshold.
-        threshold = np.percentile(cam, 85)
+        # If region to0 broad increase threshold.
+        threshold = np.percentile(cam, 95)
         cam = np.where(cam >= threshold, cam, 0.0)
 
         if cam.max() > 0:
             cam = cam / cam.max()
 
-        # If peak to0 bright reduce power.
+        # If peak too bright reduce power.
         cam = np.power(cam, 1.5)
 
         cam = cv2.resize(cam, (224, 224))
