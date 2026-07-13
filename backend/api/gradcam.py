@@ -6,6 +6,7 @@ from PIL import Image
 
 
 class GradCAM:
+
     def __init__(self, model: nn.Module, target_layer: nn.Module):
         self.model        = model
         self.target_layer = target_layer
@@ -30,17 +31,29 @@ class GradCAM:
         target = output[0, class_idx]
         target.backward()
 
-        weights = self.gradients.mean(dim=[2, 3], keepdim=True)
-        cam     = (weights * self.activations).sum(dim=1, keepdim=True)
-        cam     = torch.relu(cam)
-        cam     = cam.squeeze().cpu().numpy()
+        weights = self.gradients.float().mean(dim=[2, 3], keepdim=True)
+        cam     = (weights * self.activations.float()).sum(dim=1, keepdim=True)
+
+        cam = torch.relu(cam)
+        cam = cam.squeeze().cpu().numpy()
 
         if cam.max() > 0:
             cam = cam / cam.max()
 
+        # If region too broad increase threshold.
+        threshold = np.percentile(cam, 95)
+        cam = np.where(cam >= threshold, cam, 0.0)
+
+        if cam.max() > 0:
+            cam = cam / cam.max()
+
+        # If peak too bright reduce power.
+        cam = np.power(cam, 0.1)
+
         cam = cv2.resize(cam, (224, 224))
 
         return cam
+
 
     def overlay(self, cam: np.ndarray, original_image: Image.Image) -> Image.Image:
         heatmap = np.uint8(255 * cam)
@@ -48,7 +61,11 @@ class GradCAM:
         heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
 
         original = np.array(original_image.convert('RGB').resize((224, 224)))
-        overlaid = cv2.addWeighted(original, 0.6, heatmap, 0.4, 0)
+
+        alpha = cam[:, :, np.newaxis]
+        overlaid = (
+            original * (1 - alpha * 0.7) + heatmap * (alpha * 0.7)
+        ).astype(np.uint8)
 
         return Image.fromarray(overlaid)
 
