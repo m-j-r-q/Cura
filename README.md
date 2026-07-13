@@ -1,4 +1,4 @@
-# Cura — AI-Powered Chest X-Ray Analysis
+# Cura: An AI-Powered Application For Chest X-Ray Analysis
 
 Cura is a production-deployed, end-to-end medical imaging platform that performs automated multi-label pathology detection across 14 chest diseases. It combines image quality assessment, deep learning ensemble inference, Monte Carlo Dropout uncertainty estimation, anatomically grounded explainability, and a full-stack web interface.
 
