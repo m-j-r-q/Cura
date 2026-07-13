@@ -100,6 +100,7 @@ def run_pipeline(
         'rejection_reason': None,
         'image_quality':    get_quality_label(quality_result['metrics']['blur_score']),
         'quality_metrics':  quality_result['metrics'],
+        'quality_scores':   quality_result['quality_scores'],
         'diagnoses':        diagnoses,
         'models':           architectures,
         'n_mc_passes':      uncertainty_result['n_passes'],

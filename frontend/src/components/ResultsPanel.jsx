@@ -1,6 +1,30 @@
 import DiagnosisCard from './DiagnosisCard'
 import NoFindings from './NoFindings'
 
+function QualityScoreBar({ label, score }) {
+  const color = score >= 75 ? '#22c55e' 
+              : score >= 50 ? '#f59e0b' 
+              : '#ef4444'
+
+  return (
+    <div className="quality-score-row">
+      <div className="quality-score-header">
+        <span className="quality-score-label">{label}</span>
+        <span className="quality-score-value" style={{ color }}>
+          {score}%
+        </span>
+      </div>
+      <div className="confidence-bar-track">
+        <div
+          className="confidence-bar-fill"
+          style={{ width: `${score}%`, background: color }}
+        />
+      </div>
+    </div>
+  )
+}
+
+
 function ResultsPanel({ report, onReset }) {
   const { image_quality, quality_metrics, diagnoses, model } = report
 
@@ -21,20 +45,17 @@ function ResultsPanel({ report, onReset }) {
         <span className="model-label">Model: {model}</span>
       </div>
 
-      <div className="metrics-grid">
-        <div className="metric-box">
-          <span className="metric-label">Blur Score</span>
-          <span className="metric-value">{quality_metrics.blur_score}</span>
+      {report.quality_scores && (
+        <div className="quality-scores-panel">
+          <p className="quality-overall">
+            Overall image quality: 
+            <strong> {report.quality_scores.overall}%</strong>
+          </p>
+          <QualityScoreBar label="Sharpness" score={report.quality_scores.sharpness} />
+          <QualityScoreBar label="Contrast"  score={report.quality_scores.contrast} />
+          <QualityScoreBar label="Exposure"  score={report.quality_scores.exposure} />
         </div>
-        <div className="metric-box">
-          <span className="metric-label">Contrast</span>
-          <span className="metric-value">{quality_metrics.contrast_score}</span>
-        </div>
-        <div className="metric-box">
-          <span className="metric-label">Brightness</span>
-          <span className="metric-value">{quality_metrics.mean_brightness}</span>
-        </div>
-      </div>
+      )}
 
       <h2 className="findings-title">
         {diagnoses.length > 0 ? `${diagnoses.length} Findings Detected` : 'No Findings'}

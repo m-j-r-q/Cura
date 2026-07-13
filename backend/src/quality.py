@@ -61,13 +61,30 @@ def detect_rotation_from_segmentation(image: Image.Image) -> tuple[float, bool]:
     
     return deviation, deviation > ROTATION_THRESHOLD
 
+import math
+
+def _sigmoid_score(value, threshold, higher_is_better=True, steepness=5):
+    normalized = (value - threshold) / (threshold + 1e-8)
+    if not higher_is_better:
+        normalized = -normalized
+    return round(100 / (1 + math.exp(-steepness * normalized)), 1)
+
+
+def _brightness_score(mean_brightness):
+    center   = 128.0
+    tolerance = 60.0
+    distance  = abs(mean_brightness - center)
+    normalized = distance / tolerance
+    return round(100 / (1 + math.exp(5 * (normalized - 1))), 1)
+
+
 def assess_quality(image: Image.Image) -> dict:
     gray = np.array(image.convert('L'))
 
-    blur_score,  is_blurry   = detect_blur(gray)
+    blur_score,   is_blurry    = detect_blur(gray)
     contrast_score, mean_brightness, low_contrast, underexposed, overexposed = \
         detect_contrast_and_exposure(gray)
-    rotation, is_rotated = detect_rotation_from_segmentation(image)
+    rotation_angle, is_rotated = detect_rotation_from_segmentation(image)
 
     rejection_reason = None
     if is_blurry:
@@ -79,24 +96,44 @@ def assess_quality(image: Image.Image) -> dict:
     elif overexposed:
         rejection_reason = f"Image overexposed (brightness: {mean_brightness:.1f})"
     elif is_rotated:
-        rejection_reason = f"Image rotated (rotation: {rotation:.1f})"
+        rejection_reason = f"Image rotated {rotation_angle:.1f}° beyond threshold"
 
     passed = rejection_reason is None
 
+    # Intuitive 0-100 quality scores
+    quality_scores = {
+        'sharpness':  _sigmoid_score(blur_score, BLUR_THRESHOLD),
+        'contrast':   _sigmoid_score(contrast_score, CONTRAST_THRESHOLD),
+        'exposure':   _brightness_score(mean_brightness),
+    }
+
+    # Overall quality — weighted average
+    overall = round(
+        0.5 * quality_scores['sharpness'] +
+        0.3 * quality_scores['contrast']  +
+        0.2 * quality_scores['exposure'],
+        1
+    )
+
     return {
-        "passed":            passed,
-        "rejection_reason":  rejection_reason,
+        "passed":           passed,
+        "rejection_reason": rejection_reason,
         "metrics": {
             "blur_score":      round(blur_score, 2),
             "contrast_score":  round(contrast_score, 2),
             "mean_brightness": round(mean_brightness, 2),
-            "rotation": round(rotation, 2),
+        },
+        "quality_scores": {
+            "sharpness":  quality_scores['sharpness'],
+            "contrast":   quality_scores['contrast'],
+            "exposure":   quality_scores['exposure'],
+            "overall":    overall,
         },
         "flags": {
             "is_blurry":     is_blurry,
             "low_contrast":  low_contrast,
             "underexposed":  underexposed,
             "overexposed":   overexposed,
-            "rotated": is_rotated,
+            "is_rotated":    is_rotated,
         }
     }

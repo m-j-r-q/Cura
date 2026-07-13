@@ -152,3 +152,11 @@ body {
   color: #64748b;
   margin-bottom: 0.75rem;
 }
+
+.quality-scores-panel  { margin: 1rem 0; }
+.quality-score-row     { margin-bottom: 0.75rem; }
+.quality-score-header  { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
+.quality-score-label   { font-size: 0.8rem; color: #64748b; }
+.quality-score-value   { font-size: 0.8rem; font-weight: 600; }
+.quality-overall       { font-size: 0.9rem; color: #94a3b8; margin-bottom: 1rem; }
+.quality-overall strong { color: #f8fafc; }
