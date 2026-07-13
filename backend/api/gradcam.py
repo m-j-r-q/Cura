@@ -48,7 +48,7 @@ class GradCAM:
             cam = cam / cam.max()
 
         # If peak too bright reduce power.
-        cam = np.power(cam, 1.1)
+        cam = np.power(cam, 0.8)
 
         cam = cv2.resize(cam, (224, 224))
 
