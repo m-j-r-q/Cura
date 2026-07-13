@@ -41,7 +41,7 @@ class GradCAM:
             cam = cam / cam.max()
 
         # If region too broad increase threshold.
-        threshold = np.percentile(cam, 85)
+        threshold = np.percentile(cam, 95)
         cam = np.where(cam >= threshold, cam, 0.0)
 
         if cam.max() > 0:
