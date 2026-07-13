@@ -12,7 +12,7 @@ def get_target_layer(model, architecture: str):
         return model.features[-1][0]
 
     elif architecture == 'convnext_tiny':
-        return model.features[7][1].block[0]
+        return model.features[7][1].block
 
     else:
         raise ValueError(f"Unknown architecture: {architecture}")
