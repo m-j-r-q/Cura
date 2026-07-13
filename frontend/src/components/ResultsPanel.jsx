@@ -26,7 +26,7 @@ function QualityScoreBar({ label, score }) {
 
 
 function ResultsPanel({ report, onReset }) {
-  const { image_quality, quality_metrics, diagnoses, model } = report
+  const { image_quality, quality_metrics, diagnoses, models } = report
 
   const qualityColor = {
     'Good':       '#22c55e',
@@ -42,7 +42,7 @@ function ResultsPanel({ report, onReset }) {
             Image Quality: {image_quality}
           </span>
         </div>
-        <span className="model-label">Model: {model}</span>
+        <span className="model-label">Model: {models}</span>
       </div>
 
       {report.quality_scores && (
