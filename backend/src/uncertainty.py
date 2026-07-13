@@ -22,7 +22,7 @@ def mc_dropout_ensemble(models, input_tensor, device, n_passes=10):
             for _ in range(n_passes):
                 with autocast(device_type='cuda' if torch.cuda.is_available() else 'cpu'):
                     logits = model(input_tensor.to(device))
-                    probs  = torch.sigmoid(logits)
+                    probs  = torch.sigmoid(logits).float()
                 
                 if torch.isnan(probs).any():
                     print(f"Warning: NaN detected in probs, skipping pass")

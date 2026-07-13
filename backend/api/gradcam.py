@@ -17,10 +17,10 @@ class GradCAM:
         self._backward_hook = target_layer.register_full_backward_hook(self._save_gradients)
 
     def _save_activations(self, module, input, output):
-        self.activations = output.detach()
+        self.activations = output.detach().float()
 
     def _save_gradients(self, module, grad_input, grad_output):
-        self.gradients = grad_output[0].detach()
+        self.gradients = grad_output[0].detach().float()
 
     def generate(self, input_tensor: torch.Tensor, class_idx: int) -> np.ndarray:
         self.model.eval()

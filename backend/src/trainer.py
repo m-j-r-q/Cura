@@ -68,7 +68,7 @@ def validate_one_epoch(model, loader, criterion, device):
             with autocast(device_type='cuda'):
                 logits = model(images)
                 loss   = criterion(logits, labels)
-                probs  = torch.sigmoid(logits)
+                probs  = torch.sigmoid(logits).float()
 
             running_loss += loss.item()
 

@@ -56,7 +56,7 @@ def run_pipeline(
     # Stage 2 — Preprocess
     input_tensor = val_transform(
         image.convert('RGB')
-    ).unsqueeze(0).to(device)
+    ).unsqueeze(0).float().to(device)
 
     # Stage 3 — MC Dropout ensemble uncertainty
     uncertainty_result = mc_dropout_ensemble(

@@ -1,8 +1,12 @@
 import os
 import sys
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 import torch
+
+torch.set_default_dtype(torch.float32)
+
 import torch.nn as nn
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
