@@ -64,7 +64,7 @@ class GradCAM:
 
         alpha = cam[:, :, np.newaxis]
         overlaid = (
-            original * (1 - alpha * 0.7) + heatmap * (alpha * 0.7)
+            original * (1 - alpha * 0.3) + heatmap * (alpha * 0.3)
         ).astype(np.uint8)
 
         return Image.fromarray(overlaid)
