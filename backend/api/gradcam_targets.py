@@ -11,9 +11,5 @@ def get_target_layer(model, architecture: str):
     elif architecture == 'efficientnet_b0':
         return model.features[-1][0]
 
-    elif architecture == 'convnext_tiny':
-        last_cnblock = model.features[-2]
-        return last_cnblock.block[5]
-
     else:
         raise ValueError(f"Unknown architecture: {architecture}")
