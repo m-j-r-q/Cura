@@ -42,7 +42,6 @@ def run_pipeline(
     device
 ) -> dict:
 
-    # Stage 1 — Quality assessment
     quality_result = assess_quality(image)
     if not quality_result['passed']:
         return {
@@ -53,25 +52,22 @@ def run_pipeline(
             'diagnoses':        [],
         }
 
-    # Stage 2 — Preprocess
     input_tensor = val_transform(
         image.convert('RGB')
     ).unsqueeze(0).float().to(device)
 
-    # Stage 3 — MC Dropout ensemble uncertainty
-    uncertainty_result = mc_dropout_ensemble(
-        models, input_tensor, device, n_passes=10
-    )
+    uncertainty_result = mc_dropout_ensemble(models, input_tensor, device, n_passes=10)
+
     mean_probs    = uncertainty_result['mean_probs']
     uncertainties = uncertainty_result['uncertainty']
     per_disease   = uncertainty_result['per_disease']
 
-    # Stage 4 — Grad-CAM on primary model (first in ensemble)
-    primary_model = models[0]
-    primary_arch  = architectures[0]
+    convnext_idx   = architectures.index('convnext_tiny')
+    gradcam_model  = models[convnext_idx]
+    gradcam_arch   = 'convnext_tiny'
 
-    target_layer = get_target_layer(primary_model, primary_arch)
-    gradcam      = GradCAM(primary_model, target_layer)
+    target_layer = get_target_layer(gradcam_model, gradcam_arch)
+    gradcam      = GradCAM(gradcam_model, target_layer)
 
     diagnoses = []
     for i, disease in enumerate(DISEASES):
