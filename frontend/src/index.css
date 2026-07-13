@@ -155,8 +155,14 @@ body {
 
 .quality-scores-panel  { 
   margin-top: 10px;
-  background-color: #000000;
+  background: #000000;
+  border-radius: 14px;
+  padding: 1.25rem;
+  color: white;
+  transition: 0.2s;
+  cursor: pointer;
 }
+
 .quality-score-row     { margin-bottom: 0.75rem; }
 .quality-score-header  { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
 .quality-score-label   { font-size: 0.8rem; color: #64748b; }
