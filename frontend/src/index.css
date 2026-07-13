@@ -153,7 +153,10 @@ body {
   margin-bottom: 0.75rem;
 }
 
-.quality-scores-panel  { margin: 1rem 0; }
+.quality-scores-panel  { 
+  margin-top: 10px;
+  background-color: #000000;
+}
 .quality-score-row     { margin-bottom: 0.75rem; }
 .quality-score-header  { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
 .quality-score-label   { font-size: 0.8rem; color: #64748b; }
