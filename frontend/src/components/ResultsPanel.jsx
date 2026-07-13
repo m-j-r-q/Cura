@@ -42,7 +42,7 @@ function ResultsPanel({ report, onReset }) {
             Image Quality: {image_quality}
           </span>
         </div>
-        <span className="model-label">Model: {models}</span>
+        <span className="model-label">Model: Ensemble</span>
       </div>
 
       {report.quality_scores && (
