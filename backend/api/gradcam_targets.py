@@ -12,9 +12,9 @@ def get_target_layer(model, architecture: str):
         return model.features[-1][0]
 
     elif architecture == 'convnext_tiny':
-        final_stage = model.features[7]
+        final_stage = model.features
         last_block = final_stage[-1]
-        return last_block.mlp[2]
+        return last_block.block[5]
 
     else:
         raise ValueError(f"Unknown architecture: {architecture}")
