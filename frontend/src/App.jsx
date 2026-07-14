@@ -7,7 +7,6 @@ import LoadingScreen from './components/LoadingScreen'
 import QualityRejected from './components/QualityRejected'
 import ResultsPanel from './components/ResultsPanel'
 
-// Change this line at the top
 const API_URL = import.meta.env.VITE_API_URL || ''
 
 function App() {
@@ -24,7 +23,6 @@ function App() {
     formData.append('file', file)
 
     try {
-      // Change the axios call inside handleFileSelected
       const response = await axios.post(
         API_URL ? `${API_URL}/analyze` : '/api/analyze',
         formData,

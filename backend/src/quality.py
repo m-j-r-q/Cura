@@ -40,23 +40,19 @@ def detect_rotation_from_segmentation(image: Image.Image) -> tuple[float, bool]:
     left_mask  = masks['left_lung']
     right_mask = masks['right_lung']
     
-    # If either lung isn't detected, skip rotation check
     if left_mask.sum() < 100 or right_mask.sum() < 100:
         return 0.0, False
     
-    # Find centroid of each lung mask
     left_coords  = np.argwhere(left_mask > 0)
     right_coords = np.argwhere(right_mask > 0)
     
-    left_centroid  = left_coords.mean(axis=0)   # [y, x]
-    right_centroid = right_coords.mean(axis=0)  # [y, x]
+    left_centroid  = left_coords.mean(axis=0)
+    right_centroid = right_coords.mean(axis=0)
     
-    # Angle of line connecting centroids from horizontal
     dy = right_centroid[0] - left_centroid[0]
     dx = right_centroid[1] - left_centroid[1]
     angle = abs(np.degrees(np.arctan2(dy, dx)))
     
-    # Should be close to 0 or 180 (horizontal line)
     deviation = min(angle, abs(180 - angle))
     
     return deviation, deviation > ROTATION_THRESHOLD
@@ -100,14 +96,12 @@ def assess_quality(image: Image.Image) -> dict:
 
     passed = rejection_reason is None
 
-    # Intuitive 0-100 quality scores
     quality_scores = {
         'sharpness':  _sigmoid_score(blur_score, BLUR_THRESHOLD),
         'contrast':   _sigmoid_score(contrast_score, CONTRAST_THRESHOLD),
         'exposure':   _brightness_score(mean_brightness),
     }
 
-    # Overall quality — weighted average
     overall = round(
         0.5 * quality_scores['sharpness'] +
         0.3 * quality_scores['contrast']  +

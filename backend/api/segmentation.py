@@ -71,7 +71,6 @@ def get_affected_region(cam: np.ndarray, image: Image.Image) -> str:
     lung_mask = masks[primary_region]
     side      = "Left" if primary_region == 'left_lung' else "Right"
 
-    # Find vertical extent of the lung mask
     rows = np.where(lung_mask.sum(axis=1) > 0)[0]
 
     if len(rows) == 0:

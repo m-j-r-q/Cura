@@ -23,7 +23,6 @@ RUN pip install --no-cache-dir --timeout 300 \
 COPY requirements.txt .
 RUN pip install --no-cache-dir --timeout 300 -r requirements.txt
 
-# Pre-download TorchXRayVision segmentation weights
 RUN python -c "import torchxrayvision as xrv; xrv.baseline_models.chestx_det.PSPNet()"
 
 COPY src/ ./src/

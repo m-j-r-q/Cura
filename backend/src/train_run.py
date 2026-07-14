@@ -87,7 +87,6 @@ def train_model(
     print(f"Device: {device}")
     print(f"Initial CPU RAM available: {psutil.virtual_memory().available / 1e9:.1f} GB")
 
-    # Load data
     train_df = pd.read_csv(f'{data_dir}/train.csv')
     val_df   = pd.read_csv(f'{data_dir}/val.csv')
 
@@ -117,7 +116,6 @@ def train_model(
         persistent_workers=True
     )
 
-    # Build model
     model = build_model(
         architecture,
         pretrained=True,

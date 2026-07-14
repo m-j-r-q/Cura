@@ -50,7 +50,6 @@ def mc_dropout_ensemble(models, input_tensor, device, n_passes=10):
     mean_probs = all_probs.mean(axis=0).squeeze()
     variance   = all_probs.var(axis=0).squeeze()
 
-    # Guard against NaN in variance
     variance   = np.nan_to_num(variance, nan=0.0)
     uncertainty = np.clip(variance * 10, 0, 1)
 

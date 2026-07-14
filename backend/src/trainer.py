@@ -64,7 +64,6 @@ def validate_one_epoch(model, loader, criterion, device):
             images = images.to(device)
             labels = labels.to(device)
 
-            # Validation also benefits from autocast
             with autocast(device_type='cuda'):
                 logits = model(images)
                 loss   = criterion(logits, labels)

@@ -2,9 +2,7 @@ import DiagnosisCard from './DiagnosisCard'
 import NoFindings from './NoFindings'
 
 function QualityScoreBar({ label, score }) {
-  const color = score >= 75 ? '#22c55e' 
-              : score >= 50 ? '#f59e0b' 
-              : '#ef4444'
+  const color = score >= 75 ? '#22c55e' : score >= 50 ? '#f59e0b' : '#ef4444'
 
   return (
     <div className="quality-score-row">
