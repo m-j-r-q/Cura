@@ -70,18 +70,15 @@ class PerClassAsymmetricLoss(nn.Module):
         super().__init__()
         self.eps = eps
 
-        # 14-element parameter configurations matching your class order
-        gamma_pos_arr = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        gamma_pos_arr = [0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         gamma_neg_arr = [4.0, 4.0, 4.0, 3.0, 4.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 5.0, 5.0, 5.0]
         clip_arr      = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.10, 0.10, 0.10]
 
-        # Register buffers so they are tracked by the module state
         self.register_buffer('gamma_pos', torch.tensor(gamma_pos_arr, dtype=torch.float32))
         self.register_buffer('gamma_neg', torch.tensor(gamma_neg_arr, dtype=torch.float32))
         self.register_buffer('clip', torch.tensor(clip_arr, dtype=torch.float32))
 
     def forward(self, logits, targets):
-        # DYNAMIC FIX: Automatically fetch the device of the incoming mini-batch
         device = logits.device
         
         # Cast data and configurations to the exact same device and dtype
@@ -95,7 +92,6 @@ class PerClassAsymmetricLoss(nn.Module):
         xs_pos = probs
         xs_neg = 1.0 - probs
 
-        # Apply clipping margin with broadcasting safety
         if clip_val is not None:
             xs_neg = (xs_neg + clip_val).clamp(max=1)
 
@@ -105,7 +101,6 @@ class PerClassAsymmetricLoss(nn.Module):
         pt_pos = xs_pos * targets
         pt_neg = xs_neg * (1 - targets)
 
-        # Exponent calculation is cleanly vectorized across the targeted device
         exponent = g_pos * targets + g_neg * (1 - targets)
         focal_weight = (1 - pt_pos - pt_neg) ** exponent
 
