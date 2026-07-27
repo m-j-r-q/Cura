@@ -64,6 +64,45 @@ class AsymmetricLoss(nn.Module):
 
         return -loss.mean()
 
+
+class PerClassAsymmetricLoss(nn.Module):
+    def __init__(self, eps=1e-8):
+        super().__init__()
+        self.eps = eps
+        
+        gamma_pos_arr = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        
+        gamma_neg_arr = [4.0, 4.0, 4.0, 3.0, 4.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 5.0, 5.0, 5.0]
+        
+        clip_arr      = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.10, 0.10, 0.10]
+
+        self.register_buffer('gamma_pos', torch.tensor(gamma_pos_arr, dtype=torch.float32))
+        self.register_buffer('gamma_neg', torch.tensor(gamma_neg_arr, dtype=torch.float32))
+        self.register_buffer('clip', torch.tensor(clip_arr, dtype=torch.float32))
+
+    def forward(self, logits, targets):
+        probs = torch.sigmoid(logits)
+
+        xs_pos = probs
+        xs_neg = 1.0 - probs
+
+        if self.clip is not None:
+            xs_neg = (xs_neg + self.clip).clamp(max=1)
+
+        loss_pos = targets * torch.log(xs_pos.clamp(min=self.eps))
+        loss_neg = (1 - targets) * torch.log(xs_neg.clamp(min=self.eps))
+
+        pt_pos = xs_pos * targets
+        pt_neg = xs_neg * (1 - targets)
+
+        exponent = self.gamma_pos * targets + self.gamma_neg * (1 - targets)
+        focal_weight = (1 - pt_pos - pt_neg) ** exponent
+
+        loss = (loss_pos + loss_neg) * focal_weight
+
+        return -loss.mean()
+
+
 def train_model(
     architecture: str,
     data_dir: str,
@@ -138,11 +177,13 @@ def train_model(
         eta_min=1e-6
     )    
 
-    criterion = AsymmetricLoss(
-        gamma_neg=4,
-        gamma_pos=1,
-        clip=0.05
-    )
+    # criterion = AsymmetricLoss(
+    #     gamma_neg=4,
+    #     gamma_pos=1,
+    #     clip=0.05
+    # )
+
+    criterion = PerClassAsymmetricLoss()
 
     # AMP scaler
     scaler = GradScaler(device='cuda')

@@ -62,7 +62,7 @@ def run_pipeline(
     uncertainties = uncertainty_result['uncertainty']
     per_disease   = uncertainty_result['per_disease']
 
-    gradcam_arch   = 'densenet169'
+    gradcam_arch   = 'densenet121'
     model_idx   = architectures.index(gradcam_arch)
     gradcam_model  = models[model_idx]
 
