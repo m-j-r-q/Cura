@@ -69,25 +69,35 @@ class PerClassAsymmetricLoss(nn.Module):
     def __init__(self, eps=1e-8):
         super().__init__()
         self.eps = eps
-        
+
+        # 14-element parameter configurations matching your class order
         gamma_pos_arr = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        
         gamma_neg_arr = [4.0, 4.0, 4.0, 3.0, 4.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 5.0, 5.0, 5.0]
-        
         clip_arr      = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.10, 0.10, 0.10]
 
+        # Register buffers so they are tracked by the module state
         self.register_buffer('gamma_pos', torch.tensor(gamma_pos_arr, dtype=torch.float32))
         self.register_buffer('gamma_neg', torch.tensor(gamma_neg_arr, dtype=torch.float32))
         self.register_buffer('clip', torch.tensor(clip_arr, dtype=torch.float32))
 
     def forward(self, logits, targets):
+        # DYNAMIC FIX: Automatically fetch the device of the incoming mini-batch
+        device = logits.device
+        
+        # Cast data and configurations to the exact same device and dtype
+        targets = targets.to(device=device, dtype=logits.dtype)
+        g_pos = self.gamma_pos.to(device=device)
+        g_neg = self.gamma_neg.to(device=device)
+        clip_val = self.clip.to(device=device)
+
         probs = torch.sigmoid(logits)
 
         xs_pos = probs
         xs_neg = 1.0 - probs
 
-        if self.clip is not None:
-            xs_neg = (xs_neg + self.clip).clamp(max=1)
+        # Apply clipping margin with broadcasting safety
+        if clip_val is not None:
+            xs_neg = (xs_neg + clip_val).clamp(max=1)
 
         loss_pos = targets * torch.log(xs_pos.clamp(min=self.eps))
         loss_neg = (1 - targets) * torch.log(xs_neg.clamp(min=self.eps))
@@ -95,7 +105,8 @@ class PerClassAsymmetricLoss(nn.Module):
         pt_pos = xs_pos * targets
         pt_neg = xs_neg * (1 - targets)
 
-        exponent = self.gamma_pos * targets + self.gamma_neg * (1 - targets)
+        # Exponent calculation is cleanly vectorized across the targeted device
+        exponent = g_pos * targets + g_neg * (1 - targets)
         focal_weight = (1 - pt_pos - pt_neg) ** exponent
 
         loss = (loss_pos + loss_neg) * focal_weight
